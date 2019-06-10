@@ -76,12 +76,12 @@ class Editor extends Component {
                 <div>
                     <h2 style={{display: "inline-block", marginTop: "5px"}}>{this.props.title}</h2>
                     <div style={{float: "right"}}>
-                        <Button className="btn btn-primary gradientBtn" onClick={this.sendConfig.bind(this)} style={{marginLeft: '5px'}}>
+                        <Button className="btn btn-primary gradientBtn" onClick={this.sendConfig.bind(this)} style={{marginLeft: '2px'}}>
                             <i className="fas fa-save"/>&nbsp;&nbsp;Save</Button>
                         {this.props.editable === "cap" ? null :
 
                             <Dropdown as={ButtonGroup}>
-                                <Button className="btn btn-light" onClick={this.refresh.bind(this)} style={{marginLeft: '5px'}}>
+                                <Button className="btn btn-light" onClick={this.refresh.bind(this)} style={{marginLeft: '3px'}}>
                                     &nbsp;&nbsp;{this.state.modified ? "Cancel" : "Refresh"}
                                 </Button>
                                 {!this.state.modified ?
@@ -117,7 +117,7 @@ class Editor extends Component {
             <div>
                 {this.renderHeaders()}
                         <div className="d2h-file-header">
-                            <span className="d2h-file-name-wrapper">
+                            <span style={{width: "60%"}} className="d2h-file-name-wrapper">
                                 <i className="fas fa-file-alt"/>
                                 <span>&nbsp;&nbsp;{this.props.editable === "cap" ? "Capabilities" : this.props.editable ? "ODL config data store of " :  "ODL operational data store of " } {this.props.deviceName}</span>
                                 <span className="d2h-tag d2h-changed d2h-changed-tag"

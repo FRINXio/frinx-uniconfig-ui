@@ -12,7 +12,7 @@ class Header extends Component {
         library.add(faSignOutAlt);
         this.state = {
             username: this.props.username,
-            useremail: this.props.useremail
+            useremail: "email"
         }
     }
 
@@ -42,7 +42,7 @@ class Header extends Component {
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">
                     <Navbar.Text style={{textAlign: 'right'}}>
-                        {this.getGreeting()}, <b>{this.state.username}</b><br />{this.state.useremail}
+                        {this.getGreeting()}, <b>{this.state.username}</b><br />
                     </Navbar.Text>
                     <Nav>
                         <Nav.Link className="nav-linkHeader" href="#" onClick={this.logOut}><FontAwesomeIcon icon="sign-out-alt" /></Nav.Link>
