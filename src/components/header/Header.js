@@ -12,7 +12,6 @@ class Header extends Component {
         library.add(faSignOutAlt);
         this.state = {
             username: this.props.username,
-            useremail: "email"
         }
     }
 

@@ -288,14 +288,12 @@ class DeviceView extends Component {
         return (
             <div>
                 <header className="options">
+                    <Button className="leftAligned round noshadow backbutton" onClick={() => {
+                        this.props.history.push('/devices')
+                    }} variant="outline-light"><i className="fas fa-chevron-left"/></Button>
                     <Container fluid className="container-props">
                         <Row >
-                            <Col md={1} className="child">
-                                <Button className="round floating-btn noshadow" onClick={() => {
-                                    this.props.history.push('/devices')
-                                }} variant="outline-light" style={{marginTop: "2px"}}><i className="fas fa-chevron-left"/></Button>
-                            </Col>
-                            <Col md={4} className="child">
+                            <Col md={5} className="child">
                                     <Dropdown onClick={this.getSnapshots.bind(this)} className="leftAligned" >
                                         <Dropdown.Toggle variant="light" id="dropdown-basic">
                                             <i className="fas fa-file-download"/>&nbsp;&nbsp;Load Snapshot

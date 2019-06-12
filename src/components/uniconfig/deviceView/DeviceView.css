@@ -1,20 +1,74 @@
 .config {
     float: right;
-    position: relative;
+    padding: 20px;
+    max-width: 600px;
+    box-shadow: 0px 2px 20px 0px rgba(0,0,0,0.1);
+}
+
+.operational {
+    float: left;
     padding: 20px;
     max-width: 600px;
     box-shadow: 0px 2px 20px 0px rgba(0,0,0,0.1);
 }
 
 .container-props {
-    width: 100%;
+    width: 1280px;
 }
 
-.operational {
-    position: relative;
-    padding: 20px;
-    max-width: 600px;
-    box-shadow: 0px 2px 20px 0px rgba(0,0,0,0.1);
+.backbutton {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.options {
+    height: 70px;
+    background: linear-gradient(-90deg, rgba(0, 149, 255, 0.91) 0%, rgb(0, 93, 167) 100%);
+    /*background-image: linear-gradient(to right top, #007bff, #0088ff, #0094ff, #009fff, #00aaff);*/
+    margin-bottom: 20px;
+    box-shadow: 0px 8px 10px 0px rgba(0,0,0,0.1);
+
+}
+
+.options .child {
+    margin-top: 10px;
+}
+
+.options .child button {
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0);
+}
+
+@media screen and (max-width: 1280px) {
+    .container-props {
+        width: 100%;
+    }
+    .button--moema{
+        margin-left: -40px;
+        margin-top: 15px;
+    }
+
+    .operational {
+        margin: auto;
+        float: none;
+    }
+
+    .config {
+        margin: auto;
+        float: none;
+    }
+}
+@media screen and (max-width: 1110px) {
+    .options {
+        height: 100px;
+    }
+
+    .options .child button{
+        margin: 2px;
+    }
+
+    .backbutton {
+        margin-top: 30px;
+    }
 }
 
 button {
@@ -36,23 +90,6 @@ button {
 .rightAligned {
     float: right;
     text-align: right;
-}
-
-.options {
-    height: 70px;
-    background: linear-gradient(-90deg, rgba(0, 149, 255, 0.91) 0%, rgb(0, 93, 167) 100%);
-    /*background-image: linear-gradient(to right top, #007bff, #0088ff, #0094ff, #009fff, #00aaff);*/
-    margin-bottom: 20px;
-    box-shadow: 0px 8px 10px 0px rgba(0,0,0,0.1);
-
-}
-
-.options .child {
-    margin-top: 10px;
-}
-
-.options .child button {
-    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0);
 }
 
 button {
