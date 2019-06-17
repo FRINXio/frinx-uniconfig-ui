@@ -350,18 +350,12 @@ class DeviceView extends Component {
 
                 <Container fluid className="container-props">
                     <div className="editor">
-                        <Row>
-                            <Col>
-                                <div className="config">
-                                    {config()}
-                                </div>
-                            </Col>
-                            <Col>
-                                <div className="operational">
-                                    {operational()}
-                                </div>
-                            </Col>
-                        </Row>
+                        <div className="config">
+                            {config()}
+                        </div>
+                        <div className="operational">
+                            {operational()}
+                        </div>
                     </div>
                 </Container>
             </div>

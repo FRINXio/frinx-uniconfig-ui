@@ -1,14 +1,16 @@
 .config {
-    float: right;
+    float: left;
+    width: 49%;
     padding: 20px;
-    max-width: 600px;
+    max-width: 700px;
     box-shadow: 0px 2px 20px 0px rgba(0,0,0,0.1);
 }
 
 .operational {
-    float: left;
+    float: right;
+    width: 49%;
     padding: 20px;
-    max-width: 600px;
+    max-width: 700px;
     box-shadow: 0px 2px 20px 0px rgba(0,0,0,0.1);
 }
 
@@ -17,8 +19,8 @@
 }
 
 .backbutton {
-    margin-left: 20px;
-    margin-top: 10px;
+    margin-left: 35px !important;
+    margin-top: 20px;
 }
 
 .options {
@@ -36,39 +38,6 @@
 
 .options .child button {
     box-shadow: 0px 2px 5px 0px rgba(0,0,0,0);
-}
-
-@media screen and (max-width: 1280px) {
-    .container-props {
-        width: 100%;
-    }
-    .button--moema{
-        margin-left: -40px;
-        margin-top: 15px;
-    }
-
-    .operational {
-        margin: auto;
-        float: none;
-    }
-
-    .config {
-        margin: auto;
-        float: none;
-    }
-}
-@media screen and (max-width: 1110px) {
-    .options {
-        height: 100px;
-    }
-
-    .options .child button{
-        margin: 2px;
-    }
-
-    .backbutton {
-        margin-top: 30px;
-    }
 }
 
 .options button {
@@ -90,23 +59,6 @@
 .rightAligned {
     float: right;
     text-align: right;
-}
-
-.options {
-    height: 80px;
-    background: linear-gradient(-90deg, rgba(0, 149, 255, 0.91) 0%, rgb(0, 93, 167) 100%);
-    /*background-image: linear-gradient(to right top, #007bff, #0088ff, #0094ff, #009fff, #00aaff);*/
-    margin-bottom: 20px;
-    box-shadow: 0px 8px 10px 0px rgba(0,0,0,0.1);
-
-}
-
-.options .child {
-    margin-top: 17px;
-}
-
-.options .child button {
-    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0);
 }
 
 .editor button {
@@ -205,6 +157,45 @@
         opacity: 0;
         -webkit-transform: scale3d(1, 1, 1);
         transform: scale3d(1, 1, 1);
+    }
+}
+
+@media screen and (max-width: 1280px) {
+    .container-props {
+        width: 100%;
+    }
+
+    .operational {
+        max-width: 600px;
+        margin: auto;
+    }
+
+    .config {
+        max-width: 600px;
+        margin: auto;
+    }
+    .button--moema{
+        margin-left: -30px;
+    }
+}
+
+@media screen and (max-width: 1240px) {
+    .options {
+        height: 100px;
+    }
+
+    .options .child button{
+        margin: 2px;
+    }
+
+    .button--moema{
+        margin-left: -40px;
+        margin-top: 15px;
+    }
+
+    .backbutton {
+        margin-left: 10px !important;
+        margin-top: 10px !important;
     }
 }
 
