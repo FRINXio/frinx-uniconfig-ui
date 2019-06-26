@@ -38,6 +38,15 @@ router.get('/metadata/workflow/:name/:version', async (req, res, next) => {
     }
 });
 
+router.put('/metadata', async (req, res, next) => {
+    try {
+        let workflowDesc = req.body;
+        const result = await http.put(baseURLMeta + 'workflow/', workflowDesc);
+        res.status(200).send(result);
+    } catch (err) {
+        next(err);
+    }
+});
 router.post('/workflow/:workflowName', async (req, res, next) => {
     try {
         const result = await http.post(baseURLWorkflow + req.params.workflowName, req.body);

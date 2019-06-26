@@ -7,3 +7,21 @@
     overflow: auto;
     max-height: 550px;
 }
+
+.nonEditingPre {
+    border: 1px solid rgba(0,0,0,.125);
+    background-color: rgba(0,0,0,.03);
+}
+
+.editingPre {
+    border: 1px solid #aeb7ff;
+    background-color: #f6f7ff;
+}
+
+#json-modified-info  {
+    float: right;
+    top: 30px;
+    position: absolute;
+    right: 35px;
+    color: darkred;
+}
