@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {Modal, Button, Form, Row, Col} from "react-bootstrap";
+import {Typeahead} from 'react-bootstrap-typeahead';
 const http = require('../../../../../server/HttpServerSide').HttpClient;
 
 
@@ -15,11 +16,12 @@ class InputModal extends Component {
             workflowForm: [],
             wfdesc: "",
             status: "Execute",
-            wfId: null
+            wfId: null,
+            tasks: []
         };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         let name = this.props.wf.split(" / ")[0];
         let version = this.props.wf.split(" / ")[1];
         http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
@@ -37,6 +39,15 @@ class InputModal extends Component {
                 labels: this.getInputs(this.state.def),
             }
         }, () => {
+            if (this.state.workflowForm.labels.indexOf("task") > -1) {
+                http.get('/api/conductor/metadata/taskdef').then(res => {
+                    let tasks = [];
+                    res.result.forEach(task => tasks.push(task.name));
+                    this.setState({
+                        tasks: tasks
+                    })
+                });
+            }
             this.setState({
                 workflowForm: {
                     labels: this.state.workflowForm.labels,
@@ -96,7 +107,7 @@ class InputModal extends Component {
 
     handleInput(e,i) {
         let wfForm = this.state.workflowForm;
-        wfForm.values[i] = e.target.value;
+        wfForm.values[i] = Array.isArray(e) ? e[0] : e.target.value;
         this.setState({
             workflowForm: wfForm
         })
@@ -145,11 +156,18 @@ class InputModal extends Component {
                                     <Col sm={6} key={`col1-${i}`}>
                                         <Form.Group>
                                             <Form.Label>{item}</Form.Label>
-                                            <Form.Control
-                                                type="input"
-                                                onChange={(e) => this.handleInput(e,i)}
-                                                placeholder="Enter the input"
-                                                defaultValue={values[i]}/>
+                                            {item === "task"
+                                                ? <Typeahead
+                                                    id={`input-${i}`}
+                                                    onChange={(e) => this.handleInput(e,i)}
+                                                    options={this.state.tasks}
+                                                    placeholder="Enter the input"/>
+                                                : <Form.Control
+                                                    type="input"
+                                                    onChange={(e) => this.handleInput(e,i)}
+                                                    placeholder="Enter the input"
+                                                    defaultValue={values[i]}/>
+                                            }
                                             <Form.Text className="text-muted">
                                                 {descs[i]}
                                             </Form.Text>
