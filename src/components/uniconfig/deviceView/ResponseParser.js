@@ -5,7 +5,9 @@ export function parseResponse(type, body) {
     overallStatus = bodyJSON["output"]["overall-status"];
 
     if (bodyJSON["output"]["node-results"]) {
-        nodeStatus = bodyJSON["output"]["node-results"]["node-result"]["0"]["configuration-status"];
+        nodeStatus = bodyJSON["output"]["node-results"]["node-result"]["0"]["configuration-status"]
+            ? bodyJSON["output"]["node-results"]["node-result"]["0"]["configuration-status"]
+            : bodyJSON["output"]["node-results"]["node-result"]["0"]["status"];
         errorMessage = bodyJSON["output"]["node-results"]["node-result"]["0"]["error-message"];
         errorType = bodyJSON["output"]["node-results"]["node-result"]["0"]["error-type"];
         configuration = bodyJSON["output"]["node-results"]["node-result"]["0"]["configuration"];
