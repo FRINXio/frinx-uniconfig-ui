@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {Alert} from "react-bootstrap";
 
-
 class CustomAlerts extends Component {
     constructor(props) {
         super(props);
@@ -13,7 +12,6 @@ class CustomAlerts extends Component {
     render() {
         const handleDismiss = () => this.props.alertHandler();
         const alert = (alertType, errorMessage) => {
-            console.log(alertType)
             return (alertType.overallStatus === "fail"
                     ? errorMessage ? errorMessage : alertType.errorMessage
                     : alertType.nodeStatus
