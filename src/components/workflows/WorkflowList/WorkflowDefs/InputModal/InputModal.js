@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import {Modal, Button, Form, Row, Col} from "react-bootstrap";
+import {connect} from "react-redux";
+import * as builderActions from "../../../../../store/actions/builder";
 const http = require('../../../../../server/HttpServerSide').HttpClient;
 
 
@@ -15,7 +17,10 @@ class InputModal extends Component {
             workflowForm: [],
             wfdesc: "",
             status: "Execute",
-            wfId: null
+            wfId: null,
+            name: this.props.wf.split(" / ")[0],
+            version: Number(this.props.wf.split(" / ")[1]),
+            warning: []
         };
     }
 
@@ -26,7 +31,6 @@ class InputModal extends Component {
             this.setState({
                 def: JSON.stringify(res.result, null, 2),
                 wfdesc: res.result["description"] ? res.result["description"].split("-")[0] : "",
-                name: res.result["name"]
             }, () => this.getWorkflowInputDetails())
         });
     }
@@ -77,9 +81,9 @@ class InputModal extends Component {
                     values[i] = null;
                 } else {
                     tmpDesc[i] = tmpDesc[i][0].match(/[^[\]"]+/);
-                    tmpValue[i] = tmpValue[i][0].match(/[^[\]"]+/);
+                    tmpValue[i] = tmpValue[i][0].match(/[^[\]*]+/);
                     descs[i] = tmpDesc[i][0];
-                    values[i] = tmpValue[i] ? tmpValue[i][0] : null;
+                    values[i] = tmpValue[i] ? tmpValue[i][0].replace(/\\/g,"") : null;
                 }
             } else {
                 descs[i] = null;
@@ -96,30 +100,45 @@ class InputModal extends Component {
 
     handleInput(e,i) {
         let wfForm = this.state.workflowForm;
+        let warning = this.state.warning;
         wfForm.values[i] = e.target.value;
+        e.target.value.match(/^\s.*$/) || e.target.value.match(/^.*\s$/)
+            ? warning[i] = true
+            : warning[i] = false;
         this.setState({
-            workflowForm: wfForm
+            workflowForm: wfForm,
+            warning: warning
         })
     }
 
     executeWorkflow() {
         let {labels, values } = this.state.workflowForm;
-        let payload = {};
+        let input = {};
+        let payload = {
+            name: this.state.name,
+            version: this.state.version,
+            input
+        };
 
         for (let i = 0; i < labels.length; i++) {
             if (values[i]) {
-                payload[labels[i]] = values[i].startsWith("{") ? JSON.parse(values[i]) : values[i];
+                input[labels[i]] = values[i].startsWith("{") ? JSON.parse(values[i]) : values[i];
             }
         }
         this.setState({ status: "Executing..."});
-        http.post('/api/conductor/workflow/' + this.state.name, JSON.stringify(payload)).then(res => {
+        http.post('/api/conductor/workflow', JSON.stringify(payload)).then(res => {
             console.log(res);
             this.setState({
                 status: res.statusText,
                 wfId: res.body.text
             });
+            this.props.storeWorkflowId(res.body.text);
             this.timeoutBtn();
-        })
+
+            if (this.props.fromBuilder) {
+                this.handleClose()
+            }
+        });
     }
 
     timeoutBtn() {
@@ -131,25 +150,29 @@ class InputModal extends Component {
         let values = this.state.workflowForm.values || [];
         let descs = this.state.workflowForm.descs || [];
         let labels = this.state.workflowForm.labels || [];
+        let warning = this.state.warning;
 
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
                 <Modal.Body style={{padding: "30px"}}>
-                    <h4>{this.state.name}</h4>
+                    <h4>{this.state.name} / {this.state.version}</h4>
                     <p className="text-muted">{this.state.wfdesc}</p>
                     <hr/>
-                    <Form>
+                    <Form onSubmit={this.executeWorkflow.bind(this)}>
                         <Row>
                             {labels.map((item, i) => {
                                 return (
                                     <Col sm={6} key={`col1-${i}`}>
                                         <Form.Group>
                                             <Form.Label>{item}</Form.Label>
+                                            {warning[i]
+                                                ? <div style={{color: "red", fontSize: "12px", float: "right", marginTop: "5px"}}>Unnecessary space</div>
+                                                : null}
                                             <Form.Control
-                                                type="input"
-                                                onChange={(e) => this.handleInput(e,i)}
-                                                placeholder="Enter the input"
-                                                defaultValue={values[i]}/>
+                                                type="input" onChange={(e) => this.handleInput(e,i)}
+                                                placeholder="Enter the input" defaultValue={values[i]}
+                                                isInvalid={warning[i]}
+                                            />
                                             <Form.Text className="text-muted">
                                                 {descs[i]}
                                             </Form.Text>
@@ -182,4 +205,10 @@ class InputModal extends Component {
     }
 }
 
-export default InputModal;
+const mapDispatchToProps = dispatch => {
+    return {
+        storeWorkflowId: (id) => dispatch(builderActions.storeWorkflowId(id))
+    }
+};
+
+export default connect(null, mapDispatchToProps)(InputModal);

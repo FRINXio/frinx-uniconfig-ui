@@ -12,9 +12,10 @@ class CustomAlerts extends Component {
 
     render() {
         const handleDismiss = () => this.props.alertHandler();
-        const alert = (alertType) => {
+        const alert = (alertType, errorMessage) => {
+            console.log(alertType)
             return (alertType.overallStatus === "fail"
-                    ? alertType.errorMessage
+                    ? errorMessage ? errorMessage : alertType.errorMessage
                     : alertType.nodeStatus
                         ? "Node-status: " + alertType.nodeStatus
                         : null)
@@ -56,10 +57,12 @@ class CustomAlerts extends Component {
                     );
                 }
                 case 'dryrun': {
+                    let errorMessage = alertType.errorMessage === "Unified Mountpoint not found."
+                        ? "Dry-run is not supported for this node" : alertType.errorMessage;
                     return (
                         <Alert onClick={handleDismiss} variant={alertType.overallStatus === "complete" ? "success" : "danger" }>
                             <b>DRY-RUN {alertType.overallStatus.toUpperCase()}:&nbsp;&nbsp;</b>
-                            {alert(alertType)}&nbsp;&nbsp;&nbsp;&nbsp;
+                            {alert(alertType, errorMessage)}&nbsp;&nbsp;&nbsp;&nbsp;
                             <i className="fas fa-times clickable" onClick={handleDismiss}/>
                         </Alert>
                     );

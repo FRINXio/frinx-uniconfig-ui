@@ -45,7 +45,11 @@ class DetailsModal extends Component {
                 meta: res.meta,
                 result: res.result,
                 subworkflows: res.subworkflows,
-                input: res.result.input || {},
+                input: {
+                    name: res.meta.name,
+                    version: res.meta.version,
+                    input: res.result.input
+                } || {},
                 wfId : res.result.workflowId,
                 parentWfId: res.result.parentWorkflowId || "",
             });
@@ -65,7 +69,7 @@ class DetailsModal extends Component {
 
     executeWorkflow() {
         this.setState({ status: "Executing..."});
-        http.post('/api/conductor/workflow/' + this.state.meta.name, JSON.stringify(this.state.input)).then(res => {
+        http.post('/api/conductor/workflow', JSON.stringify(this.state.input)).then(res => {
             this.setState({
                 status: res.statusText
             });
@@ -74,10 +78,13 @@ class DetailsModal extends Component {
     }
 
     handleInput(e,i) {
-        let wfForm = this.state.input;
+        let wfForm = this.state.input.input;
         wfForm[Object.keys(wfForm)[i]] = e.target.value;
         this.setState({
-            input: wfForm
+            input: {
+                ...this.state.input,
+                input: wfForm
+            }
         })
     }
 
@@ -142,10 +149,6 @@ class DetailsModal extends Component {
         http.post('/api/conductor/bulk/restart', [this.state.wfId]).then(() => {
             this.getData();
         })
-    }
-
-    redirect() {
-
     }
 
     render() {
@@ -282,7 +285,7 @@ class DetailsModal extends Component {
         );
 
         const editRerun = () => {
-            let input = this.state.input || [];
+            let input = this.state.input.input || [];
             let iPam = this.state.meta.inputParameters || [];
 
             let labels = Object.keys(input);
