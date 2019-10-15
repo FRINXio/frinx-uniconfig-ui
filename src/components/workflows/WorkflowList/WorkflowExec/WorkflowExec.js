@@ -123,7 +123,8 @@ class WorkflowExec extends Component {
         }
     }
 
-    indent(wf, i) {
+    indent(wf, i, size) {
+        let indentSize = size ? size : 6;
         if (wf[i].parentWorkflowId) {
             let layers = 0;
             if (this.state.showChildren.some(child => child.workflowId === wf[i].parentWorkflowId)) {
@@ -134,9 +135,9 @@ class WorkflowExec extends Component {
                     if (layers > 10)
                         break;
                 }
-                return layers*6+'px';
+                return layers*indentSize+'px';
             }
-            return '6px';
+            return indentSize+'px';
         }
         return '0px';
     }
@@ -224,7 +225,7 @@ class WorkflowExec extends Component {
                         }
                         <td onClick={this.showDetailsModal.bind(this, dataset[i]["workflowId"])} className='clickable'
                             style={{
-                                textIndent: this.indent(dataset, i),
+                                textIndent: this.indent(dataset, i, 20),
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
                                 textOverflow: "ellipsis"
@@ -264,10 +265,21 @@ class WorkflowExec extends Component {
             if (idx !== -1) wfIds.splice(idx, 1);
         } else {
             wfIds.push(wfId);
+            if (!this.state.allData)
+                wfIds = this.selectChildrenWf(wfId, wfIds)
         }
         this.setState({
             selectedWfs: wfIds
         });
+    }
+
+    selectChildrenWf(parentId, wfIds) {
+        const {children} = this.props.searchReducer;
+        let newWfIds = children.filter(wf => wf.parentWorkflowId === parentId)
+            .map(wf => wf.workflowId)
+        for (let i = 0 ; i < newWfIds.length; i++)
+            wfIds = wfIds.concat(this.selectChildrenWf(newWfIds[i], newWfIds));
+        return [...new Set(wfIds)];
     }
 
     selectAllWfs() {
@@ -383,7 +395,8 @@ class WorkflowExec extends Component {
                                           placeholder="Search by keyword."/>
                         </Form.Group>
                     </Col>
-                    <Button className="primary" style={{marginBottom: "15px", marginRight: "15px"}} onClick={this.changeQuery.bind(this, "")}>
+                    <Button className="primary" style={{marginBottom: "15px", marginRight: "15px"}}
+                            onClick={() => { this.changeLabels([]); this._typeahead.clear(); this.changeQuery("");}}>
                         <i className="fas fa-times"/>
                     </Button>
                 </Row>

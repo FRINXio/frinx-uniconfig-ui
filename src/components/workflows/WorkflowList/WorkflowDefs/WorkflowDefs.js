@@ -8,6 +8,8 @@ import InputModal from "./InputModal/InputModal";
 import DiagramModal from "./DiagramModal/DiagramModal";
 import PageCount from "../../../common/PageCount";
 import PageSelect from "../../../common/PageSelect";
+import {wfLabelsColor} from "../../../constants";
+import {withRouter} from "react-router-dom";
 
 const http = require('../../../../server/HttpServerSide').HttpClient;
 
@@ -25,7 +27,8 @@ class WorkflowDefs extends Component {
             diagramModal: false,
             defaultPages: 20,
             pagesCount: 1,
-            viewedPage: 1
+            viewedPage: 1,
+            allLabels: []
         };
         this.table = React.createRef();
         this.onEditSearch = this.onEditSearch.bind(this);
@@ -37,12 +40,32 @@ class WorkflowDefs extends Component {
 
     componentDidMount() {
         http.get('/api/conductor/metadata/workflow').then(res => {
-            let size = ~~(res.result.length / this.state.defaultPages);
-            this.setState({
-                data: res.result.sort((a,b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0)) || [],
-                pagesCount: res.result.length % this.state.defaultPages ? ++size : size
-            })
+            if (res.result) {
+                let size = ~~(res.result.length / this.state.defaultPages);
+                let dataset = res.result.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)) || [];
+                let allLabels = this.getLabels(dataset);
+                this.setState({
+                    data: dataset,
+                    pagesCount: res.result.length % this.state.defaultPages ? ++size : size,
+                    allLabels: allLabels,
+                })
+            }
         })
+    }
+
+    getLabels(dataset) {
+        let labelsArr = [];
+        dataset.map(({description}) => {
+            let str = description && description.match(/-(,|) [A-Z].*/g)
+                ? description.substring(description.indexOf("-") + 1) : "";
+            if (str !== "") {
+                str = str.replace(/\s/g, "");
+                labelsArr = labelsArr.concat(str.split(","));
+            }
+            return null;
+        });
+        let allLabels = [...new Set([].concat(...labelsArr))];
+        return allLabels.filter((e) => {return e !== ""}).sort((a, b) => (a > b) ? 1 : ((b > a) ? -1 : 0));
     }
 
     onEditSearch(event) {
@@ -67,14 +90,18 @@ class WorkflowDefs extends Component {
 
     searchLabel() {
         let toBeRendered = [];
-        const rows = this.state.keywords !== "" ? this.state.table : this.state.data;
-        for (let i = 0; i < rows.length; i++) {
-            if (rows[i]["description"]) {
-                let tags = rows[i]["description"].split("-").pop().replace(/\s/g, "").split(",");
-                if (this.state.labels.every(elem => tags.indexOf(elem) > -1)) {
-                    toBeRendered.push(rows[i]);
+        if (this.state.labels.length) {
+            const rows = this.state.keywords !== "" ? this.state.table : this.state.data;
+            for (let i = 0; i < rows.length; i++) {
+                if (rows[i]["description"]) {
+                    let tags = rows[i]["description"].split("-").pop().replace(/\s/g, "").split(",");
+                    if (this.state.labels.every(elem => tags.indexOf(elem) > -1)) {
+                        toBeRendered.push(rows[i]);
+                    }
                 }
             }
+        } else {
+            toBeRendered = this.state.data;
         }
         let size = ~~(toBeRendered.length / this.state.defaultPages);
         this.setState({
@@ -103,12 +130,17 @@ class WorkflowDefs extends Component {
 
         let query = this.state.keywords.toUpperCase();
         if (query !== "") {
-            const rows = this.state.table.length > 0 ? this.state.table : this.state.data;
-            for (let i = 0; i < rows.length; i++) {
-                if (rows[i]["name"] && rows[i]["name"].toString().toUpperCase().indexOf(query) !== -1) {
-                    toBeRendered.push(rows[i]);
-                }
+            let rows = this.state.table.length > 0 ? this.state.table : this.state.data;
+            let queryWords = query.split(" ");
+            for (let i = 0; i < queryWords.length; i++) {
+                for (let j = 0; j < rows.length; j++)
+                    if (rows[j]["name"] && (rows[j]["name"].toString().toUpperCase().indexOf(queryWords[i]) !== -1
+                        || rows[j]["name"].toString().toUpperCase().replace(/_/gi, " ").indexOf(queryWords[i]) !== -1))
+                        toBeRendered.push(rows[j]);
+                rows = toBeRendered;
+                toBeRendered = [];
             }
+            toBeRendered = rows
         } else {
             this.searchLabel();
             return;
@@ -122,7 +154,6 @@ class WorkflowDefs extends Component {
     }
 
     changeActiveRow(i) {
-        this.getLabels();
         let dataset = this.state.keywords === "" && this.state.labels.length < 1 ? this.state.data : this.state.table;
         this.setState({
             activeRow: this.state.activeRow === i ? null : i,
@@ -132,6 +163,8 @@ class WorkflowDefs extends Component {
 
     updateFavourite(data) {
         if (data.description) {
+            if (!data.description.match(/-(| )[A-Z]*/g))
+                data.description += ' -';
             data.description = data.description.includes(", FAVOURITE")
                 ? data.description.replace(", FAVOURITE", "")
                 : data.description += ", FAVOURITE";
@@ -140,8 +173,11 @@ class WorkflowDefs extends Component {
         }
         http.put('/api/conductor/metadata/', [data]).then( response => {
             http.get('/api/conductor/metadata/workflow').then(res => {
+                let dataset = res.result.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)) || [];
+                let allLabels = this.getLabels(dataset);
                 this.setState({
-                    data: res.result.sort((a,b) => (a["name"] > b["name"]) ? 1 : ((b["name"] > a["name"]) ? -1 : 0)) || [],
+                    data: dataset,
+                    allLabels: allLabels
                 })
             })
         });
@@ -161,6 +197,35 @@ class WorkflowDefs extends Component {
         })
     }
 
+    createLabels = ({name, description}) => {
+        let labels = [];
+        let str =  description && description.match(/-(,|) [A-Z].*/g)
+            ? description.substring(description.indexOf("-") + 1) : "";
+        let wfLabels = str.replace(/\s/g, "").split(",");
+        wfLabels.forEach((label, i) => {
+            if (label !== "") {
+                let index = this.state.allLabels.findIndex(lab => lab === label);
+                let color = index >= wfLabelsColor.length
+                    ? wfLabelsColor[0]
+                    : wfLabelsColor[index];
+                let newLabels = (this.state.labels.findIndex(lbl => lbl === label) < 0) ? [...this.state.labels, label] : this.state.labels;
+                labels.push(
+                    <div key={`${name}-${i}`} style={{backgroundColor: color}} className="wfLabel" onClick={(e) => {
+                        e.stopPropagation(); this.onLabelSearch(newLabels)}}>
+                        {label}
+                    </div>
+                )
+            }
+        });
+        return labels;
+    };
+
+    editWorkflow() {
+        const name = this.state.activeWf.split(" / ")[0];
+        const version = this.state.activeWf.split(" / ")[1];
+        this.props.history.push(`/workflows/builder/${name}/${version}`)
+    }
+
     repeat() {
         let output = [];
         let defaultPages = this.state.defaultPages;
@@ -168,27 +233,19 @@ class WorkflowDefs extends Component {
         let dataset = this.state.keywords === "" && this.state.labels.length < 1 ? this.state.data : this.state.table;
         for (let i = 0; i < dataset.length; i++) {
             if (i >= (viewedPage - 1) * defaultPages && i < viewedPage * defaultPages) {
-                const labels = () => {
-                    let labels = [];
-                    if (dataset[i]["description"]) {
-                        let str = dataset[i]["description"].indexOf("-") !== -1
-                            ? dataset[i]["description"].substring(dataset[i]["description"].indexOf("-") + 1)
-                            : "";
-                        let wfLabels = str.replace(/\s/g, "").split(",");
-                        wfLabels.forEach(label => {
-                            if (label !== "")
-                                labels.push(
-                                    <div className="wfLabel">{label}</div>
-                                )});
-                    }
-                    return labels;
-                };
                 output.push(
                     <div className="wfRow" key={i}>
                         <Accordion.Toggle id={`wf${i}`} onClick={this.changeActiveRow.bind(this, i)}
-                                          className="clickable" as={Card.Header} variant="link" eventKey={i}>
-                            {dataset[i]["name"] + " / " + dataset[i]["version"]}
-                            {labels()}
+                                          className="clickable wfDef" as={Card.Header} variant="link" eventKey={i}>
+                            <b>{dataset[i]["name"].replace(/_/g, " ")}</b>
+                            <br/>
+                            <div className="description">
+                                {"version " + dataset[i]["version"]+": "}
+                                {dataset[i]["description"]
+                                    ? dataset[i]["description"].split("-")[0]
+                                    : null }
+                                {this.createLabels(dataset[i])}
+                            </div>
                         </Accordion.Toggle>
                         <Accordion.Collapse eventKey={i}>
                             <Card.Body style={{padding: "0px"}}>
@@ -202,16 +259,15 @@ class WorkflowDefs extends Component {
                                     <Button variant="outline-light noshadow"
                                             onClick={this.showDefinitionModal.bind(this)}>Definition</Button>
                                     <Button variant="outline-light noshadow"
+                                            onClick={this.editWorkflow.bind(this)}>Edit</Button>
+                                    <Button variant="outline-light noshadow"
                                             onClick={this.showDiagramModal.bind(this)}>Diagram</Button>
                                     <Button variant="outline-light noshadow" onClick={this.updateFavourite.bind(this, dataset[i])}>
                                         <i className={dataset[i]["description"] && dataset[i]["description"].includes("FAVOURITE") ? 'fa fa-star' : 'far fa-star'}
                                            style={{cursor: 'pointer'}}/>
                                     </Button>
-
                                 </div>
                                 <div className="accordBody">
-                                    <b>{dataset[i]["description"] ? "Description" : null}</b><br/>
-                                    <p>{JSON.stringify(dataset[i]["description"] + 1).split("-")[0].substr(1)}</p>
                                     <b>Tasks</b><br/>
                                     <p>{JSON.stringify(dataset[i]["tasks"].map(task => {
                                         return task.name
@@ -224,24 +280,6 @@ class WorkflowDefs extends Component {
             }
         }
         return output
-    }
-
-    getLabels() {
-        let labelsArr = [];
-        if (this.state.data.length) {
-            this.state.data.map(wf => {
-                let str = wf["description"] ? wf["description"].substring(wf["description"].indexOf("-") + 1) : null;
-                if (str === wf["description"]) {
-                    str = null;
-                }
-                if (str) {
-                    str = str.replace(/\s/g, "");
-                    labelsArr = labelsArr.concat(str.split(","));
-                }
-                return null;
-            });
-        }
-        return [...new Set([].concat(...labelsArr))];
     }
 
     showDefinitionModal() {
@@ -293,7 +331,7 @@ class WorkflowDefs extends Component {
                          id="typeaheadDefs"
                          selected={this.state.labels}
                          onChange={this.onLabelSearch.bind(this)} clearButton
-                         labelKey="name" multiple options={this.getLabels()}
+                         labelKey="name" multiple options={this.state.allLabels}
                          placeholder="Search by label."/>
                  </Col>
                  <Col>
@@ -320,13 +358,14 @@ class WorkflowDefs extends Component {
              <Container style={{marginTop: "5px"}}>
                  <Row>
                      <Col sm={2}>
-                         <PageCount dataSize={this.state.keywords === "" ? this.state.data.length : this.state.table.length}
+                         <PageCount dataSize={this.state.keywords === "" || this.state.table.length > 0 ? this.state.table.length : this.state.data.length}
                                     defaultPages={this.state.defaultPages}
                                     handler={this.setCountPages.bind(this)}/>
                      </Col>
                      <Col sm={8}/>
                      <Col sm={2}>
-                         <PageSelect viewedPage={this.state.viewedPage} count={this.state.pagesCount} handler={this.setViewPage.bind(this)}/>
+                         <PageSelect viewedPage={this.state.viewedPage} count={this.state.pagesCount}
+                                     handler={this.setViewPage.bind(this)}/>
                      </Col>
                  </Row>
              </Container>
@@ -335,4 +374,4 @@ class WorkflowDefs extends Component {
     }
 }
 
-export default WorkflowDefs
+export default withRouter(WorkflowDefs)
