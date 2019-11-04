@@ -165,6 +165,7 @@ const GeneralInfoModal = props => {
         <Tabs style={{ marginBottom: "20px" }}>
           <Tab eventKey={1} title="General">
             <GeneralParamsTab
+              id={"GeneralInfoModal"}
               finalWf={finalWorkflow}
               handleInput={handleInput}
               isWfNameValid={isWfNameValid}

@@ -399,8 +399,6 @@ class DiagramBuilder extends Component {
       // handle tasks
       finalWf.tasks = tasks;
 
-      this.props.updateFinalWorkflow(finalWf);
-
       return finalWf;
     } catch (e) {
       return this.props.showCustomAlert(

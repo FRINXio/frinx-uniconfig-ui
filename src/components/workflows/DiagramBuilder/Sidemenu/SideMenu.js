@@ -22,6 +22,7 @@ const SideMenu = props => {
         functionalTasks.push(
           <SystemTask
             id={`functionalNode${i}`}
+            key={`${i}`}
             model={{ type: func, wfObject }}
             name={func.toUpperCase()}
           />
@@ -38,6 +39,7 @@ const SideMenu = props => {
         functionalTasks.push(
           <SystemTask
             id={`functionalNode${i}`}
+            key={`${i}`}
             model={{ type: func, wfObject }}
             name={func.toUpperCase()}
           />
@@ -61,6 +63,7 @@ const SideMenu = props => {
         functionalTasks.push(
           <SystemTask
             id={`functionalNode${i}`}
+            key={`${i}`}
             model={{ type: func, wfObject }}
             name={func.toUpperCase()}
           />
@@ -69,6 +72,7 @@ const SideMenu = props => {
         functionalTasks.push(
           <SystemTask
             id={`functionalNode${i}`}
+            key={`${i}`}
             model={{ type: func }}
             name={func.toUpperCase()}
           />
