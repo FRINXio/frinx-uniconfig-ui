@@ -1,54 +1,61 @@
-import {NodeModel, DiagramEngine, Toolkit} from "storm-react-diagrams";
+import { NodeModel, DiagramEngine, Toolkit } from "storm-react-diagrams";
 import * as _ from "lodash";
-import {DefaultPortModel} from "./DefaultPortModel";
+import { DefaultPortModel } from "./DefaultPortModel";
 
 export class DefaultNodeModel extends NodeModel {
-    name: string;
-    color: string;
-    inputs: {};
-    ports: { [s: string]: DefaultPortModel };
+  name: string;
+  color: string;
+  inputs: {};
+  ports: { [s: string]: DefaultPortModel };
 
-    constructor(name: string = "Untitled", color: string = "rgb(0,192,255)", inputs: {}) {
-        super("default");
-        this.name = name;
-        this.color = color;
-        super.extras = {inputs: inputs};
-    }
+  constructor(
+    name: string = "Untitled",
+    color: string = "rgb(0,192,255)",
+    inputs: {}
+  ) {
+    super("default");
+    this.name = name;
+    this.color = color;
+    super.extras = { inputs: inputs };
 
-    addInPort(label: string): DefaultPortModel {
-        return this.addPort(new DefaultPortModel(true, Toolkit.UID(), label));
-    }
+    this.addInPort("In");
+    this.addOutPort("Out")
+  }
 
-    addOutPort(label: string): DefaultPortModel {
-        return this.addPort(new DefaultPortModel(false, Toolkit.UID(), label));
-    }
+  addInPort(label: string): DefaultPortModel {
+    return this.addPort(new DefaultPortModel(true, Toolkit.UID(), label));
+  }
 
-    deSerialize(object, engine: DiagramEngine) {
-        super.deSerialize(object, engine);
-        this.name = object.name;
-        this.color = object.color;
-    }
+  addOutPort(label: string): DefaultPortModel {
+    return this.addPort(new DefaultPortModel(false, Toolkit.UID(), label));
+  }
 
-    serialize() {
-        return _.merge(super.serialize(), {
-            name: this.name,
-            color: this.color
-        });
-    }
+  deSerialize(object, engine: DiagramEngine) {
+    super.deSerialize(object, engine);
+    this.name = object.name;
+    this.color = object.color;
+  }
 
-    getInPorts(): DefaultPortModel[] {
-        return _.filter(this.ports, portModel => {
-            return portModel.in;
-        });
-    }
+  serialize() {
+    return _.merge(super.serialize(), {
+      name: this.name,
+      color: this.color
+    });
+  }
 
-    getOutPorts(): DefaultPortModel[] {
-        return _.filter(this.ports, portModel => {
-            return !portModel.in;
-        });
-    }
+  getInPorts(): DefaultPortModel[] {
+    return _.filter(this.ports, portModel => {
+      return portModel.in;
+    });
+  }
 
-    getInputs() {
-        return this.inputs;
-    }
+  getOutPorts(): DefaultPortModel[] {
+    return _.filter(this.ports, portModel => {
+      return !portModel.in;
+    });
+  }
+
+  getInputs() {
+    return this.inputs;
+  }
 }

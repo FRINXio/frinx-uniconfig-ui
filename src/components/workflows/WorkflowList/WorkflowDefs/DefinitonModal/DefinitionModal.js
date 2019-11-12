@@ -1,59 +1,44 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import Highlight from "react-highlight.js";
-const http = require('../../../../../server/HttpServerSide').HttpClient;
+const http = require("../../../../../server/HttpServerSide").HttpClient;
 
+const DefinitionModal = props => {
+  const [definition, setDefinition] = useState("");
 
-class DefinitionModal extends Component {
-    constructor(props, context) {
-        super(props, context);
+  useEffect(() => {
+    const name = props.wf.split(" / ")[0];
+    const version = props.wf.split(" / ")[1];
+    http
+      .get("/api/conductor/metadata/workflow/" + name + "/" + version)
+      .then(res => {
+        setDefinition(JSON.stringify(res.result, null, 2));
+      });
+  }, []);
 
-        this.handleClose = this.handleClose.bind(this);
+  const handleClose = () => {
+    props.modalHandler();
+  };
 
-        this.state = {
-            show: true,
-            def: ""
-        };
-    }
-
-    componentDidMount() {
-        let name = this.props.wf.split(" / ")[0];
-        let version = this.props.wf.split(" / ")[1];
-        http.get('/api/conductor/metadata/workflow/' + name + '/' + version).then(res => {
-            this.setState({
-                def: JSON.stringify(res.result, null, 2)
-            })
-        })
-    }
-
-    handleClose() {
-        this.setState({ show: false });
-        this.props.modalHandler()
-    }
-
-    render() {
-        return (
-            <Modal size="xl" show={this.state.show} onHide={this.handleClose}>
-                <Modal.Header>
-                    <Modal.Title>{this.props.wf}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <code style={{fontSize: "17px"}}>
-                            <pre style={{maxHeight: "600px"}}>
-                                <Highlight language="json">
-                                    {this.state.def}
-                                </Highlight>
-                            </pre>
-                    </code>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={this.handleClose}>
-                        Close
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        );
-    }
-}
+  return (
+    <Modal size="xl" show={props.show} onHide={handleClose}>
+      <Modal.Header>
+        <Modal.Title>{props.wf}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <code style={{ fontSize: "17px" }}>
+          <pre style={{ maxHeight: "600px" }}>
+            <Highlight language="json">{definition}</Highlight>
+          </pre>
+        </code>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
 
 export default DefinitionModal;
