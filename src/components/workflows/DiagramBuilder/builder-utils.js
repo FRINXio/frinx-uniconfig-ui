@@ -18,12 +18,11 @@ export const getWfInputsRegex = wf => {
   return inputParameters;
 };
 
-export const hash = () => (
+export const hash = () =>
   Math.random()
     .toString(36)
     .toUpperCase()
-    .substr(2, 4)
-);
+    .substr(2, 4);
 
 export const encode = s => {
   let out = [];
@@ -67,6 +66,28 @@ export const getWfInputs = wf => {
   }
 
   return inputParameters;
+};
+
+// binary search tree to find last nodes in nested decision tree
+export function BinarySearchTree() {
+  this.root = null;
+  this.lastNodes = [];
+}
+
+BinarySearchTree.prototype.inOrderTraversal = function(root) {
+  if (_.last(Object.values(root.decisionCases)[0]).type === "DECISION") {
+    this.inOrderTraversal(_.last(Object.values(root.decisionCases)[0]));
+  } else {
+    this.lastNodes.push(_.last(Object.values(root.decisionCases)[0]));
+  }
+
+  if (root.defaultCase) {
+    if (_.last(root.defaultCase).type === "DECISION") {
+      this.inOrderTraversal(_.last(root.defaultCase));
+    } else {
+      this.lastNodes.push(_.last(root.defaultCase));
+    }
+  }
 };
 
 // function to get nested key (inputParameters) from system tasks
@@ -175,14 +196,14 @@ export const handleForkNode = forkNode => {
 };
 
 export const handleDecideNode = decideNode => {
-  let completeBranchLink = _.values(decideNode.ports.completePort.links)[0];
   let failBranchLink = _.values(decideNode.ports.failPort.links)[0];
   let neutralBranchLink = _.values(decideNode.ports.neutralPort.links)[0];
   let firstNeutralNode = null;
 
-  [completeBranchLink, failBranchLink].forEach((branch, i) => {
+  [failBranchLink, neutralBranchLink].forEach((branch, i) => {
+    let branchArray = [];
+
     if (branch) {
-      let branchArray = [];
       let currentNode = branch.targetPort.getNode();
       let inputLinks = getLinksArray("in", currentNode);
       let outputLink = getLinksArray("out", currentNode)[0];
@@ -190,7 +211,7 @@ export const handleDecideNode = decideNode => {
       while (
         (inputLinks.length === 1 ||
           currentNode.type === "join" ||
-          currentNode.type === "decision") &&
+          currentNode.type === "fork") &&
         outputLink
       ) {
         switch (currentNode.type) {
@@ -206,16 +227,11 @@ export const handleDecideNode = decideNode => {
             let innerDecideNode = handleDecideNode(currentNode).decideNode;
             let innerFirstNeutralNode = handleDecideNode(currentNode)
               .firstNeutralNode;
-            let innerFirstNeutralLinks = getLinksArray(
-              "out",
-              innerFirstNeutralNode
-            );
             branchArray.push(innerDecideNode.extras.inputs);
-
             if (innerFirstNeutralNode && innerFirstNeutralNode.extras.inputs) {
               branchArray.push(innerFirstNeutralNode.extras.inputs);
             }
-            currentNode = innerFirstNeutralLinks[0].targetPort.getNode();
+            currentNode = innerFirstNeutralNode;
             break;
           default:
             branchArray.push(currentNode.extras.inputs);
@@ -226,23 +242,23 @@ export const handleDecideNode = decideNode => {
         outputLink = getLinksArray("out", currentNode)[0];
       }
 
-      let casesValues = Object.keys(decideNode.extras.inputs.decisionCases);
+      firstNeutralNode = currentNode;
+    }
 
-      switch (i) {
-        case 0:
-          decideNode.extras.inputs.decisionCases[casesValues[1]] = branchArray;
-          break;
-        case 1:
-          decideNode.extras.inputs.decisionCases[casesValues[0]] = branchArray;
-          break;
-        default:
-          break;
-      }
+    let casesValues = Object.keys(decideNode.extras.inputs.decisionCases);
+
+    switch (i) {
+      case 0:
+        decideNode.extras.inputs.decisionCases[casesValues[0]] = branchArray;
+        break;
+      case 1:
+        decideNode.extras.inputs.defaultCase = branchArray;
+        break;
+      default:
+        break;
     }
   });
-  if (neutralBranchLink) {
-    firstNeutralNode = neutralBranchLink.targetPort.getNode();
-  }
+
   return { decideNode, firstNeutralNode };
 };
 
