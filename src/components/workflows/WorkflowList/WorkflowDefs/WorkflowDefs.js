@@ -498,7 +498,7 @@ class WorkflowDefs extends Component {
             </Form.Group>
           </Col>
         </Row>
-        <div className="scrollWrapper" style={{ maxHeight: "650px" }}>
+        <div className="scrollWrapper">
           <Table ref={this.table}>
             <thead>
               <tr>

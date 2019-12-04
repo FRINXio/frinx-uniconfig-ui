@@ -13,7 +13,13 @@
 
 .scrollWrapper {
     overflow: auto;
-    max-height: 700px;
+    max-height: 708px;
+}
+
+@media screen and (max-height: 1020px) {
+    .scrollWrapper {
+        height: 610px;
+    }
 }
 
 .leftAligned1 {

@@ -463,7 +463,11 @@ class WorkflowExec extends Component {
         refreshTable={
           this.state.allData
             ? this.props.fetchNewData.bind(this, 1, this.state.defaultPages)
-            : this.props.fetchParentWorkflows.bind(this, 1, this.state.defaultPages)
+            : this.props.fetchParentWorkflows.bind(
+                this,
+                1,
+                this.state.defaultPages
+              )
         }
         show={this.state.detailsModal}
       />
@@ -524,7 +528,7 @@ class WorkflowExec extends Component {
             <i className="fas fa-times" />
           </Button>
         </Row>
-        <div className="execTableWrapper">
+        <div className="execTableWrapper collapsible">
           <Table ref={this.table} striped={this.state.allData} hover size="sm">
             <thead>
               <tr>

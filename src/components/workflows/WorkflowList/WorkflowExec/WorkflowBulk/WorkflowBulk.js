@@ -59,11 +59,14 @@ class WorkflowBulk extends Component {
       >
         <Card>
           <Accordion.Toggle
-            onClick={() =>
+            onClick={() => {
               this.setState({
                 showBulk: this.state.showBulk === "0" ? null : "0"
-              })
-            }
+              });
+              document
+                .querySelector(".execTableWrapper.collapsible")
+                .classList.toggle("collapsed");
+            }}
             className="clickable"
             as={Card.Header}
             eventKey="0"
@@ -156,6 +159,7 @@ class WorkflowBulk extends Component {
                     variant="outline-primary"
                     value="pause"
                     onClick={e => this.performOperation(e)}
+                    style={{ marginBottom: "5px" }}
                   >
                     Pause
                   </Button>
@@ -163,7 +167,7 @@ class WorkflowBulk extends Component {
                     variant="outline-primary"
                     value="resume"
                     onClick={e => this.performOperation(e)}
-                    style={{ marginLeft: "5px" }}
+                    style={{ marginLeft: "5px", marginBottom: "5px" }}
                   >
                     Resume
                   </Button>
@@ -171,7 +175,7 @@ class WorkflowBulk extends Component {
                     variant="outline-primary"
                     value="retry"
                     onClick={e => this.performOperation(e)}
-                    style={{ marginLeft: "5px" }}
+                    style={{ marginLeft: "5px", marginBottom: "5px" }}
                   >
                     Retry
                   </Button>

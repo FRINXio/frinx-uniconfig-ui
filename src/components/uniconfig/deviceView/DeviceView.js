@@ -13,7 +13,6 @@ import {
   Row,
   Spinner
 } from "react-bootstrap";
-import DropdownMenu from "./dropdownMenu/DropdownMenu";
 import SnapshotModal from "./snapshotModal/SnapshotModal";
 import CustomAlerts from "../customAlerts/CustomAlerts";
 import ConsoleModal from "./consoleModal/ConsoleModal";
@@ -365,18 +364,18 @@ class DeviceView extends Component {
     return (
       <div>
         <header className="options">
-          <Button
-            className="round floating-btn noshadow"
-            onClick={() => {
-              this.props.history.push("/devices");
-            }}
-            variant="outline-light"
-          >
-            <i className="fas fa-chevron-left" />
-          </Button>
           <Container fluid className="container-props">
             <Row>
               <Col md={5} className="child">
+                <Button
+                  className="round noshadow leftAligned"
+                  onClick={() => {
+                    this.props.history.push("/devices");
+                  }}
+                  variant="outline-light"
+                >
+                  <i className="fas fa-chevron-left" />
+                </Button>
                 <Dropdown
                   onClick={this.getSnapshots.bind(this)}
                   className="leftAligned"
