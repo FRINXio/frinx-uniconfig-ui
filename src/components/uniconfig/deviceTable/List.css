@@ -22,6 +22,12 @@
     }
 }
 
+@media screen and (max-height: 900px) {
+    .scrollWrapper {
+        height: 565px;
+    }
+}
+
 .leftAligned1 {
     text-align: left;
     float: left;
