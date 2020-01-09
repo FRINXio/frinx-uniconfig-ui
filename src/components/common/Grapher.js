@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import dagreD3 from "dagre-d3";
 import d3 from "d3";
-import { Tabs, Tab, Modal, Row, Col, Container } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import Clipboard from "clipboard";
 import TaskModal from "./TaskModal";
 
