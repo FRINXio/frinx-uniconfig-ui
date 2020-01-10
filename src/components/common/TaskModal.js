@@ -6,7 +6,13 @@ const TaskModal = props => {
   let task = props.task;
   let show = props.show;
   return (
-    <Modal style={{marginTop: "-20px"}} size="lg" scrollable show={show} onHide={props.handle}>
+    <Modal
+      style={{ marginTop: "-20px" }}
+      size="lg"
+      scrollable
+      show={show}
+      onHide={props.handle}
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           {task.taskType} ({task.status})
@@ -97,12 +103,14 @@ const TaskModal = props => {
 
             <code>
               <pre
-                style={{ maxHeight: "500px", marginTop: "20px" }}
+                style={{
+                  maxHeight: "500px",
+                  marginTop: "20px",
+                  backgroundColor: "#eaeef3"
+                }}
                 id="t_json"
               >
-                <Highlight language="json">
-                  {JSON.stringify(task, null, 3)}
-                </Highlight>
+                {JSON.stringify(task, null, 3)}
               </pre>
             </code>
           </Tab>

@@ -391,10 +391,12 @@ class DetailsModal extends Component {
           />
         </h4>
         <code>
-          <pre id="json" className="heightWrapper">
-            <Highlight language="json">
-              {JSON.stringify(this.state.result, null, 2)}
-            </Highlight>
+          <pre
+            id="json"
+            className="heightWrapper"
+            style={{ backgroundColor: "#eaeef3" }}
+          >
+            {JSON.stringify(this.state.result, null, 2)}
           </pre>
         </code>
       </div>
