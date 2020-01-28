@@ -3,9 +3,18 @@
     text-align: left;
 }
 
-.execTableWrapper {
+.execTableWrapper.collapsible {
     overflow: auto;
-    max-height: 550px;
+    max-height: 643px;
+}
+
+@media screen and (max-height: 1020px) {
+    .execTableWrapper {
+        height: 500px;
+    }
+}
+.execTableWrapper.collapsed {
+    height: 500px;
 }
 
 .childWf {

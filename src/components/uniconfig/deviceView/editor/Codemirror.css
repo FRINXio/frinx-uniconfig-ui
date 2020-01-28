@@ -3,9 +3,21 @@
 .CodeMirror {
     /* Set height, width, borders, and global font properties here */
     font-family: monospace;
-    height: 500px;
+    height: 700px;
     color: black;
     direction: ltr;
+}
+
+@media screen and (max-height: 1020px) {
+    .CodeMirror {
+        height: 600px;
+    }
+}
+
+@media screen and (max-height: 900px) {
+    .CodeMirror {
+        height: 500px;
+    }
 }
 
 /* PADDING */
