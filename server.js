@@ -23,7 +23,7 @@ app.get('/*', function (req, res) {
 });
 
 const port = process.env.NODE_PORT || 3000;
-const host = process.env.NODE_HOST || "0.0.0.0";
+const host = process.env.NODE_HOST;
 
 // if certificates folder is empty use HTTP
 // else HTTPS is used (key.pem and cert.pem must be present in folder)
