@@ -268,6 +268,7 @@ class MountModal extends Component {
           item[0] = e.value ? e.value : e;
           if (which === "type") {
             this.setState({ deviceType: e.value });
+            formToDisplay["cli-topology:device-version"][0] = "*";
           }
           if (which === "ssh") {
             this.setState({ isSsh: e.value === "ssh" });
