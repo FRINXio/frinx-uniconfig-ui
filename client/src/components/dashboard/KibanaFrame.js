@@ -8,11 +8,7 @@ const KibanaFrame = () => {
         width="100%"
         height="900px"
         title="Kibana"
-        src={
-          process.env.REACT_APP_KIBANA === "true"
-            ? `${window.location.protocol}//${window.location.hostname}/inventory/kibana`
-            : `${window.location.protocol}//${window.location.hostname}:5601`
-        }
+        src={`${window.location.protocol}//${window.location.hostname}:5601`}
       />
     </div>
   );
