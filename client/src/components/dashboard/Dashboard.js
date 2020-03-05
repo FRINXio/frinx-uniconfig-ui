@@ -11,6 +11,7 @@ import {
 
 class Dashboard extends Component {
   render() {
+    console.log(process.env.REACT_APP_KIBANA);
     return (
       <Container>
         <Row>
@@ -43,11 +44,12 @@ class Dashboard extends Component {
           </Col>
           <Col>
             <Panel
+              disabled={process.env.REACT_APP_KIBANA === "true"}
               title="Inventory & Logs"
               desc="Create, view and organize assets. View system logs."
               icon={faBoxOpen}
               style={{ background: "linear-gradient" }}
-              link="/inventory"
+              link={process.env.REACT_APP_KIBANA === "true" ? "" : "/inventory"}
             />
           </Col>
         </Row>
