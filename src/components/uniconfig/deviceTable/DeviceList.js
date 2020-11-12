@@ -84,7 +84,10 @@ const DeviceList = (props) => {
     };
 
     const mountNode = () => {
-        props.history.push(global.frontendUrlPrefix + '/mount')
+        props.history.push({
+            pathname: global.frontendUrlPrefix + '/mount',
+            state: {templateNode: checked.length === 1 ? checked[0] : null }
+        })
     };
 
     const unmountNodes = async () => {

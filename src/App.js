@@ -13,7 +13,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import theme from "./components/common/theme";
 import DeviceDetails from "./components/uniconfig/deviceTable/DeviceDetails";
 import Breadcrumb from "./components/common/Breadcrumb";
-import MountDevice from "./components/uniconfig/deviceTable/MountDevice";
+import MountDevice from "./components/uniconfig/deviceTable/mount/MountDevice";
 
 const { frontendUrlPrefix } = globalConstants;
 

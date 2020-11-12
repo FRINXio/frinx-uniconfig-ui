@@ -1,73 +1,27 @@
-import React, {useContext, useEffect, useState} from 'react'
-import Container from "@material-ui/core/Container";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
-import {GlobalContext} from "../../common/GlobalContext";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Paper from "@material-ui/core/Paper/Paper";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
+import React, {useContext, useEffect, useState} from "react";
+import {GlobalContext} from "../../../common/GlobalContext";
+import {useInterval} from "../../../common/useInterval";
+import {HttpClient as http} from "../../../common/HttpClient";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import {HttpClient as http} from "../../common/HttpClient";
-import _ from "lodash";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
 import Accordion from "@material-ui/core/Accordion";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Typography from "@material-ui/core/Typography";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
 import Button from "@material-ui/core/Button";
 import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from '@material-ui/lab/Alert';
-import {useInterval} from "../../common/useInterval";
+import MuiAlert from "@material-ui/lab/Alert";
+import Console from "./Console";
 
-const useStyles = makeStyles((theme) => ({
-    wrapper: {
-        display: "flex",
-        alignItems: "center"
-    },
-    icon: {
-        height: "50px",
-        width: "50px"
-    },
-    paper: {
-        padding: "30px",
-    },
-    basicTab: {
-        display: "flex",
-        justifyContent: "space-between",
-        margin: "20px",
-        width: "500px"
-    },
-}));
-
-const TabPanel = (props) => {
-    const {children, value, index, ...other} = props;
-
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <div style={{marginTop: "40px"}}>
-                    {children}
-                </div>
-            )}
-        </div>
-    );
-};
-
-const GET_SUPPORTED_DEVICES_URL = "/rests/data/cli-translate-registry:available-cli-device-translations?content=nonconfig&depth=3";
 const MOUNT_CLI_DEVICE_URL = (nodeId) => "/rests/data/network-topology:network-topology/topology=cli/node=" + nodeId;
-const GET_CONN_STATUS_URL = (nodeId) => "/rests/data/network-topology:network-topology/topology=cli" + "/node=" + nodeId + "?content=nonconfig";
+const GET_CLI_NODE_NONCONFIG_URL = (nodeId) => "/rests/data/network-topology:network-topology/topology=cli/node=" + nodeId + "?content=nonconfig";
+const GET_CLI_NODE_CONFIG_URL = (nodeId) => "/rests/data/network-topology:network-topology/topology=cli/node=" + nodeId + "?content=config";
 
-const Cli = ({supportedDevices}) => {
+const CliTab = ({supportedDevices, templateNode}) => {
     const global = useContext(GlobalContext);
     const [cliMountForm, setCliMountForm] = useState({
         "network-topology:node-id": "xr5",
@@ -91,17 +45,51 @@ const Cli = ({supportedDevices}) => {
         "cli-topology:keepalive-delay": 45,
         "cli-topology:keepalive-timeout": 45
     });
-    const [outputConsole, setOutputConsole] = useState({nodeId: "", output: [], isRunning: false});
+    const [nodeId, setNodeId] = useState();
+    const [outputConsole, setOutputConsole] = useState({output: [], isRunning: false});
     const [alert, setAlert] = useState({
         open: false,
         severity: "success",
         message: ""
     });
 
+    useEffect(() => {
+        setNodeTemplate(templateNode)
+    }, [templateNode])
+
+    const setNodeTemplate = async (templateNode) => {
+        if (!templateNode) {
+            return null;
+        }
+        const {nodeId} = templateNode;
+        const result = await http.get(global.backendApiUrlPrefix + GET_CLI_NODE_CONFIG_URL(nodeId), global.authToken);
+
+        if (!result) {
+            const {statusCode, statusText} = result;
+            return handleAlertOpen(statusCode, statusText)
+        }
+
+        const node = result?.node[0];
+
+        setCliMountForm({
+            ...cliMountForm,
+            "network-topology:node-id": node["node-id"],
+            "cli-topology:device-version": node["cli-topology:device-version"].replace("x", "*"),
+            ...node
+        })
+
+        setCliMountAdvForm({
+            ...cliMountAdvForm,
+            dryRun: !!node["cli-topology:dry-run-journal-size"],
+            lazyConnection: !!node["cli-topology:command-timeout"],
+            ...node
+        })
+    }
+
+    // interval to check node connection status when console is open
     useInterval(() => {
-        // Your custom logic here
-        checkConnectionStatus(outputConsole.nodeId)
-    }, outputConsole.isRunning ? 1000 : null);
+        checkConnectionStatus(nodeId)
+    }, outputConsole.isRunning ? 2000 : null);
 
     const handleAlertClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -163,17 +151,23 @@ const Cli = ({supportedDevices}) => {
         const result = await http.put(global.backendApiUrlPrefix + MOUNT_CLI_DEVICE_URL(nodeId), payload, global.authToken);
         const {statusCode, statusText} = result;
 
-        setOutputConsole({...outputConsole, nodeId, isRunning: true});
-
+        setNodeId(nodeId);
+        setOutputConsole({...outputConsole, isRunning: true})
         handleAlertOpen(statusCode, statusText);
     };
 
     const checkConnectionStatus = async (nodeId) => {
-        const result = await http.get(global.backendApiUrlPrefix + GET_CONN_STATUS_URL(nodeId), global.authToken);
-        console.log(result)
+        const result = await http.get(global.backendApiUrlPrefix + GET_CLI_NODE_NONCONFIG_URL(nodeId), global.authToken);
         const connectionStatus = result?.node[0]?.["cli-topology:connection-status"];
-        setOutputConsole({...outputConsole, output: [...outputConsole.output, connectionStatus]});
-        return result
+        const connectedMessage = result?.node[0]?.["cli-topology:connected-message"];
+        const date = new Date().toLocaleTimeString();
+        const connectionStatusString = `[${date}] ${connectionStatus}`
+        const connectedMessageString = `[${date}] ${connectedMessage}`
+
+        setOutputConsole({
+            ...outputConsole,
+            output: [...outputConsole.output, connectionStatusString, connectedMessageString]
+        });
     };
 
     const mountCliBasicTemplate = [
@@ -375,7 +369,6 @@ const Cli = ({supportedDevices}) => {
                 </Grid>
             )
         });
-
     };
 
     return (
@@ -401,12 +394,10 @@ const Cli = ({supportedDevices}) => {
             <Grid item xs={12}>
                 <Accordion style={{boxShadow: 'none'}}>
                     <AccordionSummary style={{padding: 0}} expandIcon={<ExpandMoreIcon/>}>
-                        <Typography color="textSecondary" variant="button">Console</Typography>
+                        <Typography color="textSecondary" variant="button">Output</Typography>
                     </AccordionSummary>
                     <AccordionDetails style={{padding: 0}}>
-                        <div style={{backgroundColor: "black", width: "100%", height: "200px", maxHeight: "200px", overflowY: "scroll", color: "white", padding: "20px"}}>
-                            {outputConsole.output.map(s => <p>{s}</p>)}
-                        </div>
+                        <Console outputConsole={outputConsole}/>
                     </AccordionDetails>
                 </Accordion>
             </Grid>
@@ -425,64 +416,4 @@ const Cli = ({supportedDevices}) => {
     )
 };
 
-const MountDevice = (props) => {
-    const global = useContext(GlobalContext);
-    const classes = useStyles();
-    const [tab, setTab] = useState(0);
-    const [supportedDevices, setSupportedDevices] = useState([]);
-
-
-    useEffect(() => {
-        // from url
-
-        getSupportedDevices()
-        // from props
-
-    }, []);
-
-    const getSupportedDevices = () => {
-        http.get(global.backendApiUrlPrefix + GET_SUPPORTED_DEVICES_URL, global.authToken).then((res) => {
-            try {
-                let supportedDevices = res["available-cli-device-translations"]["available-cli-device-translation"];
-                let grouped = _.groupBy(supportedDevices, function (device) {
-                    return device["device-type"];
-                });
-                setSupportedDevices(grouped);
-            } catch (e) {
-                console.log(e);
-            }
-        });
-    };
-
-    return (
-        <Container>
-            <div className={classes.wrapper}>
-                <Typography variant="h2" gutterBottom>
-                    <IconButton onClick={() => props.history.push(global.frontendUrlPrefix + '/devices1')}>
-                        <NavigateBeforeIcon className={classes.icon}/>
-                    </IconButton>
-                    Mount Device
-                </Typography>
-            </div>
-            <Paper elevation={2} className={classes.paper}>
-                <Tabs
-                    value={tab}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    onChange={(e, newValue) => setTab(newValue)}
-                >
-                    <Tab label="CLI" id={`full-width-tab-${0}`}/>
-                    <Tab label="Netconf" id={`full-width-tab-${1}`}/>
-                </Tabs>
-                <TabPanel value={tab} index={0}>
-                    <Cli supportedDevices={supportedDevices}/>
-                </TabPanel>
-                <TabPanel value={tab} index={1}>
-                    Netconf
-                </TabPanel>
-            </Paper>
-        </Container>
-    )
-};
-
-export default MountDevice;
+export default CliTab;
