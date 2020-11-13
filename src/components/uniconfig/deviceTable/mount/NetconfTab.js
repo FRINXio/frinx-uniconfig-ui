@@ -16,12 +16,15 @@ import Button from "@material-ui/core/Button";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import Console from "./Console";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import IconButton from "@material-ui/core/IconButton";
+import {Visibility, VisibilityOff} from "@material-ui/icons";
 
 const MOUNT_NETCONF_DEVICE_URL = (nodeId) => "/rests/data/network-topology:network-topology/topology=topology-netconf/node=" + nodeId;
 const GET_NETCONF_NODE_NONCONFIG_URL = (nodeId) => "/rests/data/network-topology:network-topology/topology=topology-netconf/node=" + nodeId + "?content=nonconfig";
 const GET_NETCONF_NODE_CONFIG_URL = (nodeId) => "/rests/data/network-topology:network-topology/topology=topology-netconf/node=" + nodeId + "?content=config";
 
-const NetconfTab = ({supportedDevices, templateNode}) => {
+const NetconfTab = ({templateNode}) => {
     const global = useContext(GlobalContext);
     const [netconfMountForm, setNetconfMountForm] = useState({
         "node-id": "xr5",
@@ -52,6 +55,7 @@ const NetconfTab = ({supportedDevices, templateNode}) => {
     });
     const [nodeId, setNodeId] = useState();
     const [outputConsole, setOutputConsole] = useState({output: [], isRunning: false});
+    const [showPassword, setShowPassword] = useState(false);
     const [alert, setAlert] = useState({
         open: false,
         severity: "success",
@@ -59,7 +63,7 @@ const NetconfTab = ({supportedDevices, templateNode}) => {
     });
 
     useEffect(() => {
-        setNodeTemplate(templateNode)
+        templateNode?.topologyId === "topology-netconf" && setNodeTemplate(templateNode)
     }, [templateNode])
 
     const setNodeTemplate = async (templateNode) => {
@@ -261,7 +265,19 @@ const NetconfTab = ({supportedDevices, templateNode}) => {
                     helperText={description}
                     onChange={(e) => setNetconfMountForm({...netconfMountForm, [key]: e.target.value})}
                     variant="outlined"
+                    type={displayValue === "Password" && (showPassword ? 'text' : 'password')}
                     fullWidth
+                    InputProps={{
+                        endAdornment: displayValue === "Password" && <InputAdornment position="end">
+                            <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={() => setShowPassword(!showPassword)}
+                                edge="end"
+                            >
+                                {showPassword ? <Visibility/> : <VisibilityOff/>}
+                            </IconButton>
+                        </InputAdornment>
+                    }}
                 >
                     {select && options?.map((option, i) => (
                         <MenuItem key={`option-${i}-${displayValue}`} value={option}>

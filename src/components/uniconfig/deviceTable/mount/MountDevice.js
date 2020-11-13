@@ -65,7 +65,7 @@ const MountDevice = (props) => {
         // if node was selected as template
         const {templateNode} = props.location.state;
         setTemplateNode(templateNode)
-
+        setTab(templateNode?.topologyId === "topology-netconf" ? 1 : 0)
         getSupportedDevices()
     }, []);
 
@@ -107,7 +107,7 @@ const MountDevice = (props) => {
                     <CliTab supportedDevices={supportedDevices} templateNode={templateNode}/>
                 </TabPanel>
                 <TabPanel value={tab} index={1}>
-                    <NetconfTab supportedDevices={supportedDevices} templateNode={templateNode}/>
+                    <NetconfTab templateNode={templateNode}/>
                 </TabPanel>
             </Paper>
         </Container>
