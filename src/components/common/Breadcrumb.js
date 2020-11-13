@@ -60,9 +60,9 @@ const Breadcrumb = (props) => {
                                 if (value === "ui") return;
 
                                 return (
-                                    last ? <Typography color="textPrimary">{value}</Typography>
+                                    last ? <Typography key={index} color="textPrimary">{value}</Typography>
                                         :
-                                        <Link color="inherit" href="#" onClick={() => handleRoute(to)}>{value}</Link>
+                                        <Link key={index} color="inherit" href="#" onClick={() => handleRoute(to)}>{value}</Link>
                                 );
                             })}
                         </Breadcrumbs>

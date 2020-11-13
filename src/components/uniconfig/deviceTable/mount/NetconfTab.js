@@ -256,7 +256,7 @@ const NetconfTab = ({templateNode}) => {
 
     const renderBasicOptions = () => {
         return mountNetconfBasicTemplate.map(({displayValue, description, size, select, options, key}) => {
-            return <Grid item xs={size}>
+            return <Grid key={displayValue} item xs={size}>
                 <TextField
                     id={`inputField-${displayValue}`}
                     select={select}
@@ -265,7 +265,7 @@ const NetconfTab = ({templateNode}) => {
                     helperText={description}
                     onChange={(e) => setNetconfMountForm({...netconfMountForm, [key]: e.target.value})}
                     variant="outlined"
-                    type={displayValue === "Password" && (showPassword ? 'text' : 'password')}
+                    type={displayValue === "Password" && showPassword ? 'text' : 'password'}
                     fullWidth
                     InputProps={{
                         endAdornment: displayValue === "Password" && <InputAdornment position="end">
@@ -293,7 +293,7 @@ const NetconfTab = ({templateNode}) => {
         return mountNetconfAdvTemplate.map(({displayValue, toggle, key, size}) => {
             if (toggle) {
                 return (
-                    <Grid item xs={size}>
+                    <Grid key={displayValue} item xs={size}>
                         <FormControlLabel key={key}
                                           control={<Switch checked={netconfMountAdvForm[key]}
                                                            onChange={(e) => handleToggle(key, e)}/>}
@@ -310,7 +310,7 @@ const NetconfTab = ({templateNode}) => {
             if (toggle) {
                 return (
                     (netconfMountAdvForm[key] ? on : off)?.map(({displayValue, key}) =>
-                        <Grid item xs={size}>
+                        <Grid key={displayValue} item xs={size}>
                             <TextField
                                 id={`inputField-${key}`}
                                 label={displayValue}
@@ -328,7 +328,7 @@ const NetconfTab = ({templateNode}) => {
                 )
             }
             return (
-                <Grid item xs={size}>
+                <Grid key={displayValue} item xs={size}>
                     <TextField
                         id={`inputField-${key}`}
                         label={displayValue}

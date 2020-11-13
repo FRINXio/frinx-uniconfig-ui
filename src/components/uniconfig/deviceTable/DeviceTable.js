@@ -91,7 +91,7 @@ const DeviceTable = (props) => {
                     {props.nodes
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((node, i) => (
-                            <Grow in={true} style={{transformOrigin: '0 0 0'}} {...{timeout: i * 200}}>
+                            <Grow key={i} in={true} style={{transformOrigin: '0 0 0'}} {...{timeout: i * 200}}>
                                 <TableRow key={i}>
                                     <TableCell padding="checkbox" align="center">
                                         <Checkbox

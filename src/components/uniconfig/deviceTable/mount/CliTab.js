@@ -297,7 +297,7 @@ const CliTab = ({supportedDevices, templateNode}) => {
 
     const renderBasicOptions = () => {
         return mountCliBasicTemplate.map(({displayValue, description, size, select, options, key}) => {
-            return <Grid item xs={size}>
+            return <Grid key={displayValue} item xs={size}>
                 <TextField
                     id={`inputField-${displayValue}`}
                     select={select}
@@ -306,7 +306,7 @@ const CliTab = ({supportedDevices, templateNode}) => {
                     helperText={description}
                     onChange={(e) => setCliMountForm({...cliMountForm, [key]: e.target.value})}
                     variant="outlined"
-                    type={displayValue === "Password" && (showPassword ? 'text' : 'password')}
+                    type={displayValue === "Password" && showPassword ? 'text' : 'password'}
                     fullWidth
                     InputProps={{
                         endAdornment: displayValue === "Password" && <InputAdornment position="end">
@@ -334,7 +334,7 @@ const CliTab = ({supportedDevices, templateNode}) => {
         return mountCliAdvTemplate.map(({displayValue, toggle, key, size}) => {
             if (toggle) {
                 return (
-                    <Grid item xs={size}>
+                    <Grid key={displayValue} item xs={size}>
                         <FormControlLabel key={key}
                                           control={<Switch checked={cliMountAdvForm[key]}
                                                            onChange={(e) => handleToggle(key, e)}/>}
@@ -351,7 +351,7 @@ const CliTab = ({supportedDevices, templateNode}) => {
             if (toggle) {
                 return (
                     (cliMountAdvForm[key] ? on : off)?.map(({displayValue, key}) =>
-                        <Grid item xs={size}>
+                        <Grid key={displayValue} item xs={size}>
                             <TextField
                                 id={`inputField-${key}`}
                                 label={displayValue}
@@ -369,7 +369,7 @@ const CliTab = ({supportedDevices, templateNode}) => {
                 )
             }
             return (
-                <Grid item xs={size}>
+                <Grid key={displayValue} item xs={size}>
                     <TextField
                         id={`inputField-${key}`}
                         label={displayValue}
@@ -399,7 +399,7 @@ const CliTab = ({supportedDevices, templateNode}) => {
                     <AccordionSummary style={{padding: 0}} expandIcon={<ExpandMoreIcon/>}>
                         <Typography color="textSecondary" variant="button">Advanced settings</Typography>
                     </AccordionSummary>
-                    <AccordionDetails style={{padding: 0}}>
+                    <AccordionDetails key="advOptions" style={{padding: 0}}>
                         <Grid container spacing={3}>
                             {renderToggles()}
                             {renderAdvOptions()}
