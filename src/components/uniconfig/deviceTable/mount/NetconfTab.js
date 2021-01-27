@@ -265,7 +265,7 @@ const NetconfTab = ({templateNode}) => {
                     helperText={description}
                     onChange={(e) => setNetconfMountForm({...netconfMountForm, [key]: e.target.value})}
                     variant="outlined"
-                    type={displayValue === "Password" && showPassword ? 'text' : 'password'}
+                    type={(displayValue === "Password" && !showPassword) ? 'password' : 'text'}
                     fullWidth
                     InputProps={{
                         endAdornment: displayValue === "Password" && <InputAdornment position="end">

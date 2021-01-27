@@ -24,7 +24,7 @@ const DeviceHeader = (props) => {
     return (
         <div className={classes.wrapper}>
             <Typography variant="h2" gutterBottom>
-                <IconButton onClick={() => props.history.push(global.frontendUrlPrefix + '/devices1')}>
+                <IconButton onClick={() => props.history.push(global.frontendUrlPrefix + '/devices')}>
                     <NavigateBeforeIcon className={classes.icon}/>
                 </IconButton>
                 {props.title}

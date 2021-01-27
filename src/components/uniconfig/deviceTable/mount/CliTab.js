@@ -306,7 +306,7 @@ const CliTab = ({supportedDevices, templateNode}) => {
                     helperText={description}
                     onChange={(e) => setCliMountForm({...cliMountForm, [key]: e.target.value})}
                     variant="outlined"
-                    type={displayValue === "Password" && showPassword ? 'text' : 'password'}
+                    type={(displayValue === "Password" && !showPassword) ? 'password' : 'text'}
                     fullWidth
                     InputProps={{
                         endAdornment: displayValue === "Password" && <InputAdornment position="end">

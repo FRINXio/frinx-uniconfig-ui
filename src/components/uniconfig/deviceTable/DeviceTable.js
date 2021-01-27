@@ -110,11 +110,12 @@ const DeviceTable = (props) => {
                                     <TableCell align="left">{node.osVersion}</TableCell>
                                     <TableCell align="right">
                                         <IconButton color="secondary"
-                                                    onClick={() => props.history.push(global.frontendUrlPrefix + `/devices1/${node.nodeId}?topology=${node.topologyId}`)}
+                                                    onClick={() => props.history.push(global.frontendUrlPrefix + `/devices/${node.nodeId}?topology=${node.topologyId}`)}
                                                     size="small" className={classes.actionButton}>
                                             <DnsIcon/>
                                         </IconButton>
                                         <IconButton color="primary" size="small"
+                                                    onClick={() => props.history.push(global.frontendUrlPrefix + `/devices/edit/${node.nodeId}`)}
                                                     className={classes.actionButton}>
                                             <SettingsIcon/>
                                         </IconButton>
