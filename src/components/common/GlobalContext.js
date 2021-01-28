@@ -5,7 +5,7 @@ export const GlobalContext = createContext();
 const AUTH_TOKEN = "Basic YWRtaW46YWRtaW4=";
 
 export const globalConstants = {
-  backendApiUrlPrefix: "/uniconfig/api",
+  backendApiUrlPrefix: "/api/uniconfig",
   frontendUrlPrefix: "/uniconfig/ui",
   authToken: AUTH_TOKEN
 };
