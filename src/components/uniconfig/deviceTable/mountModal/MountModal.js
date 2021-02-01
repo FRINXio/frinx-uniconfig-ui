@@ -184,7 +184,7 @@ class MountModal extends Component {
         data = { ...data, ...this.state.mountNetconfFormCaps };
       }
     }
-    payload["network-topology:node"] = data;
+    payload["network-topology:node"] = [data];
     let topology = Object.keys(payload["network-topology:node"]).some(name => {
       return name.indexOf("netconf") >= 0;
     })
