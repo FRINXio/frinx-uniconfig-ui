@@ -190,7 +190,7 @@ class MountModal extends Component {
     })
       ? "topology-netconf"
       : "cli";
-    let node = Object.values(payload["network-topology:node"])[0];
+    let node = payload["network-topology:node"]?.[0]?.["network-topology:node-id"] || payload["network-topology:node"]?.[0]?.["node-id"];
 
     this.mountDevice(node, payload, topology);
   }
