@@ -21,10 +21,10 @@ const HttpClient = {
       });
     }),
 
-  delete: (path, data, token) =>
+  delete: (path, token) =>
     new Promise((resolve, reject) => {
       const req = request
-        .delete(path, data)
+        .delete(path)
         .accept("application/json")
         .query("archiveWorkflow=false");
       if (token) {
