@@ -53,7 +53,7 @@ class SnapshotModal extends Component {
     http
       .post(
         this.context.backendApiUrlPrefix +
-          "/rests/operations/snapshot-manager:create-snapshot",
+          "/operations/snapshot-manager:create-snapshot",
         target,
         this.context.authToken
       )

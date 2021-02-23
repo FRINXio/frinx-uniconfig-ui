@@ -197,7 +197,7 @@ class MountModal extends Component {
     http
       .put(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=" +
+          "/data/network-topology:network-topology/topology=" +
           topology +
           "/node=" +
           node,
@@ -216,7 +216,7 @@ class MountModal extends Component {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=" +
+          "/data/network-topology:network-topology/topology=" +
           topology +
           "/node=" +
           node +
@@ -254,7 +254,7 @@ class MountModal extends Component {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/cli-translate-registry:available-cli-device-translations?content=nonconfig&depth=3",
+          "/data/cli-translate-registry:available-cli-device-translations?content=nonconfig&depth=3",
         this.context.authToken
       )
       .then((res) => {
