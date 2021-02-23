@@ -67,7 +67,7 @@ class DeviceView extends Component {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+          "/data/network-topology:network-topology/topology=uniconfig/node=" +
           device +
           "/frinx-uniconfig-topology:configuration?content=config",
         this.context.authToken
@@ -82,7 +82,7 @@ class DeviceView extends Component {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+          "/data/network-topology:network-topology/topology=uniconfig/node=" +
           device +
           "/frinx-uniconfig-topology:configuration?content=nonconfig",
         this.context.authToken
@@ -101,7 +101,7 @@ class DeviceView extends Component {
     http
       .put(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+          "/data/network-topology:network-topology/topology=uniconfig/node=" +
           this.state.device +
           "/frinx-uniconfig-topology:configuration",
         data,
@@ -136,7 +136,7 @@ class DeviceView extends Component {
     http
       .post(
         this.context.backendApiUrlPrefix +
-          "/rests/operations/uniconfig-manager:calculate-diff",
+          "/operations/uniconfig-manager:calculate-diff",
         target,
         this.context.authToken
       )
@@ -161,7 +161,7 @@ class DeviceView extends Component {
     http
       .post(
         this.context.backendApiUrlPrefix +
-          "/rests/operations/uniconfig-manager:commit",
+          "/operations/uniconfig-manager:commit",
         target,
         this.context.authToken
       )
@@ -177,7 +177,7 @@ class DeviceView extends Component {
         http
           .get(
             this.context.backendApiUrlPrefix +
-              "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+              "/data/network-topology:network-topology/topology=uniconfig/node=" +
               this.state.device +
               "/frinx-uniconfig-topology:configuration?content=nonconfig",
             this.context.authToken
@@ -201,7 +201,7 @@ class DeviceView extends Component {
     http
       .post(
         this.context.backendApiUrlPrefix +
-          "/rests/operations/dryrun-manager:dryrun-commit",
+          "/operations/dryrun-manager:dryrun-commit",
         target,
         this.context.authToken
       )
@@ -240,7 +240,7 @@ class DeviceView extends Component {
     http
       .post(
         this.context.backendApiUrlPrefix +
-          "/rests/operations/uniconfig-manager:sync-from-network",
+          "/operations/uniconfig-manager:sync-from-network",
         target,
         this.context.authToken
       )
@@ -248,7 +248,7 @@ class DeviceView extends Component {
         http
           .get(
             this.context.backendApiUrlPrefix +
-              "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+              "/data/network-topology:network-topology/topology=uniconfig/node=" +
               this.state.device +
               "/frinx-uniconfig-topology:configuration?content=nonconfig",
             this.context.authToken
@@ -273,7 +273,7 @@ class DeviceView extends Component {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=uniconfig/node=" +
+          "/data/network-topology:network-topology/topology=uniconfig/node=" +
           this.state.device +
           "/frinx-uniconfig-topology:configuration?content=config",
         this.context.authToken
@@ -294,7 +294,7 @@ class DeviceView extends Component {
     http
       .post(
         this.context.backendApiUrlPrefix +
-          "/rests/operations/uniconfig-manager:replace-config-with-operational",
+          "/operations/uniconfig-manager:replace-config-with-operational",
         target,
         this.context.authToken
       )
@@ -315,7 +315,7 @@ class DeviceView extends Component {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology?content=config",
+          "/data/network-topology:network-topology?content=config",
         this.context.authToken
       )
       .then((res) => {
@@ -344,7 +344,7 @@ class DeviceView extends Component {
       http
         .post(
           this.context.backendApiUrlPrefix +
-            "/rests/operations/snapshot-manager:delete-snapshot",
+            "/operations/snapshot-manager:delete-snapshot",
           target,
           this.context.authToken
         )
@@ -361,7 +361,7 @@ class DeviceView extends Component {
       http
         .post(
           this.context.backendApiUrlPrefix +
-            "/rests/operations/snapshot-manager:replace-config-with-snapshot",
+            "/operations/snapshot-manager:replace-config-with-snapshot",
           target,
           this.context.authToken
         )
@@ -369,7 +369,7 @@ class DeviceView extends Component {
           http
             .get(
               this.context.backendApiUrlPrefix +
-                "/rests/data/network-topology:network-topology?content=config",
+                "/data/network-topology:network-topology?content=config",
               this.context.authToken
             )
             .then((res) => {

@@ -73,7 +73,7 @@ class List extends Component {
       os_version = await http
         .get(
           this.context.backendApiUrlPrefix +
-            "/rests/data/network-topology:network-topology/topology=" +
+            "/data/network-topology:network-topology/topology=" +
             topology +
             "/node=" +
             node_id +
@@ -175,14 +175,14 @@ class List extends Component {
       if (device["topology"] === "netconf") {
         return http.delete(
           this.context.backendApiUrlPrefix +
-            "/rests/data/network-topology:network-topology/topology=topology-netconf/node=" +
+            "/data/network-topology:network-topology/topology=topology-netconf/node=" +
             device["node_id"],
           this.context.authToken
         );
       } else {
         return http.delete(
           this.context.backendApiUrlPrefix +
-            "/rests/data/network-topology:network-topology/topology=cli/node=" +
+            "/data/network-topology:network-topology/topology=cli/node=" +
             device["node_id"],
           this.context.authToken
         );
@@ -198,7 +198,7 @@ class List extends Component {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=cli?content=nonconfig",
+          "/data/network-topology:network-topology/topology=cli?content=nonconfig",
         this.context.authToken
       )
       .then((res) => {
@@ -222,7 +222,7 @@ class List extends Component {
     http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=topology-netconf?content=nonconfig",
+          "/data/network-topology:network-topology/topology=topology-netconf?content=nonconfig",
         this.context.authToken
       )
       .then((res) => {
@@ -292,7 +292,7 @@ class List extends Component {
     return http
       .get(
         this.context.backendApiUrlPrefix +
-          "/rests/data/network-topology:network-topology/topology=" +
+          "/data/network-topology:network-topology/topology=" +
           topology +
           "/node=" +
           node_id +
@@ -319,7 +319,7 @@ class List extends Component {
           return http
             .get(
               this.context.backendApiUrlPrefix +
-                "/rests/data/network-topology:network-topology/topology=" +
+                "/data/network-topology:network-topology/topology=" +
                 topology +
                 "/node=" +
                 node_id +

@@ -38,5 +38,6 @@
   ],
   "devDependencies": {
     "prettier": "^2.1.2"
-  }
+  },
+  "homepage": "/uniconfig/ui"
 }
